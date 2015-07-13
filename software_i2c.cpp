@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 #define DRIVE_PIN_LOW(x) pinMode(x,OUTPUT)
-#define FLOAT_PIN_HIGH(x) pinMode(x,INPUT_PULLUP)
+#define FLOAT_PIN_HIGH(x) pinMode(x,INPUT)
 #define READ_PIN(x) digitalRead(x)
 
 #define CLOCK_STRETCH_TIMEOUT clock_delay * 10
@@ -16,18 +16,16 @@
 #define CLOCK_DELAY() delayMicroseconds(clock_delay) 
 
 
-Software_I2C::Software_I2C(unsigned char address, 
-                           char data_pin,
+Software_I2C::Software_I2C(char data_pin,
                            char clock_pin,
                            unsigned int clock_period)
 {
-  address     = address;
   _data_pin   = data_pin;
   _clock_pin  = clock_pin;
   clock_delay = clock_period >> 2;
 
-  pinMode(data_pin, INPUT_PULLUP);
-  pinMode(clock_pin, INPUT_PULLUP);
+  FLOAT_PIN_HIGH(_data_pin);
+  FLOAT_PIN_HIGH(_clock_pin);
   
   /* Set the outputs to low so that when the mode is changed to output
      the value on the wire will be low.
@@ -168,6 +166,7 @@ char Software_I2C::_read_bit(char* error)
 
 char Software_I2C::write(unsigned char output)
 {
+  char error;
   int bit_looper;
   char write_status;
   
@@ -176,6 +175,7 @@ char Software_I2C::write(unsigned char output)
     write_status = _write_bit(output & 0x80);
     if (write_status == 0)
     {
+      //Serial.print("w");
       output = output << 1;
     }
     else
@@ -187,7 +187,7 @@ char Software_I2C::write(unsigned char output)
   
   FLOAT_PIN_HIGH(_data_pin);
   
-  return READ_PIN(_data_pin);
+  return _read_bit(&error);
 }
 
 
@@ -201,10 +201,12 @@ char Software_I2C::_write_bit(unsigned char bit)
   if (bit > 0)
   {
     FLOAT_PIN_HIGH(_data_pin);
+    //Serial.print("1");
   }
   else 
   {
     DRIVE_PIN_LOW(_data_pin);
+    //Serial.print("0");
   }
 
   CLOCK_DELAY();
@@ -219,10 +221,12 @@ char Software_I2C::_write_bit(unsigned char bit)
   {
     CLOCK_STRETCH_DELAY();
     stretch_timer++;
+    //Serial.print("S");
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
       _release_control();
+      //Serial.println("Stretch1");
       return WRITE_CLOCK_PIN_TIMEOUT;
     }
   }
@@ -236,6 +240,7 @@ char Software_I2C::_write_bit(unsigned char bit)
   if ((bit == 1) && (READ_PIN(_data_pin) == 0))
   {
     _release_control();
+    //Serial.println("Arbitration_Lost");
     return WRITE_ARBITRATION_LOST;
   }
   
@@ -284,6 +289,8 @@ char Software_I2C::start_i2c()
   }
   
   DRIVE_PIN_LOW(_data_pin);
+  CLOCK_DELAY();
+  DRIVE_PIN_LOW(_clock_pin);
   
   return NO_ERROR;
 
@@ -311,6 +318,7 @@ char Software_I2C::stop_i2c()
     }
   }
   
+  CLOCK_DELAY();
   FLOAT_PIN_HIGH(_data_pin);
   
   stretch_timer = 0;

@@ -18,8 +18,7 @@
 class Software_I2C 
 {
 public:
-  Software_I2C(unsigned char address,
-               char data_pin,
+  Software_I2C(char data_pin,
                char clock_pin,
                unsigned int clock_period);
   
@@ -31,7 +30,6 @@ public:
   char stop_i2c();
 
 private:
-  unsigned char address;
   char _data_pin;
   char _clock_pin;
   unsigned int clock_delay;
