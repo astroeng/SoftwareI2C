@@ -1,6 +1,9 @@
 #ifndef SOFTWARE_I2C_H
 #define SOFTWARE_I2C_H
 
+#define I2C_HIGH 1
+#define I2C_LOW  0
+
 #define AVAILABLE               10
 #define BUSY                    11
 
@@ -23,9 +26,9 @@ public:
                unsigned int clock_period);
   
   char status();
-  unsigned char read(char* error);
+  unsigned char read(char* error, char ack = I2C_LOW);
   char write(unsigned char output);
-  
+
   char start_i2c();
   char stop_i2c();
 

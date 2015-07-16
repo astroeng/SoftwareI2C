@@ -10,9 +10,6 @@
 #define CLOCK_STRETCH_TIMEOUT clock_delay * 10
 #define CLOCK_STRETCH_DELAY() delayMicroseconds(1)
 
-#define I2C_HIGH 1
-#define I2C_LOW  0
-
 #define CLOCK_DELAY() delayMicroseconds(clock_delay) 
 
 
@@ -73,7 +70,7 @@ char Software_I2C::status()
 /* Read a byte of information from a slave device and reply with the 
    appropriate acknowledgement.
  */
-unsigned char Software_I2C::read(char* error)
+unsigned char Software_I2C::read(char* error, char ack)
 {
   unsigned char input = 0;
   char input_bit = 0;
@@ -99,7 +96,7 @@ unsigned char Software_I2C::read(char* error)
   
   /* Send the Acknowledge */
   
-  *error = _write_bit(I2C_LOW);
+  *error = _write_bit(ack);
   
   return input;
   
