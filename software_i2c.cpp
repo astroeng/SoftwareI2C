@@ -12,6 +12,9 @@
 
 #define CLOCK_DELAY() delayMicroseconds(clock_delay) 
 
+// Test macro uncomment the 'x' to run the code in test mode.
+#define TEST(x) //x
+
 
 Software_I2C::Software_I2C(char data_pin,
                            char clock_pin,
@@ -19,18 +22,15 @@ Software_I2C::Software_I2C(char data_pin,
 {
   _data_pin   = data_pin;
   _clock_pin  = clock_pin;
-  clock_delay = clock_period >> 2;
+  clock_delay = clock_period >> 1;
 
-  FLOAT_PIN_HIGH(_data_pin);
-  FLOAT_PIN_HIGH(_clock_pin);
+  _release_control();
   
   /* Set the outputs to low so that when the mode is changed to output
      the value on the wire will be low.
    */
   digitalWrite(_data_pin, I2C_LOW);
   digitalWrite(_clock_pin, I2C_LOW);
-  
-  _release_control();
   
 }
 
@@ -78,6 +78,8 @@ unsigned char Software_I2C::read(char* error, char ack)
   
   /* Loop through sending the bits of the byte. */
 
+  TEST(Serial.print("r"));
+  
   for (bit_looper = 0; bit_looper < 8; bit_looper++)
   {
 
@@ -97,6 +99,8 @@ unsigned char Software_I2C::read(char* error, char ack)
   /* Send the Acknowledge */
   
   *error = _write_bit(ack);
+  
+  TEST(Serial.println());
   
   return input;
   
@@ -145,6 +149,15 @@ char Software_I2C::_read_bit(char* error)
 
   bit = READ_PIN(_data_pin);
   
+  if (bit > 0) 
+  {
+    TEST(Serial.print("rb1"));
+  }
+  else 
+  {
+    TEST(Serial.print("rb0"));
+  }
+
   CLOCK_DELAY();
   
   /* Reassume control of the clock pin and return the result from the remote
@@ -167,12 +180,12 @@ char Software_I2C::write(unsigned char output)
   int bit_looper;
   char write_status;
   
+  TEST(Serial.print("w"));
   for (bit_looper = 0; bit_looper < 8; bit_looper++)
   {
     write_status = _write_bit(output & 0x80);
     if (write_status == 0)
     {
-      //Serial.print("w");
       output = output << 1;
     }
     else
@@ -182,7 +195,10 @@ char Software_I2C::write(unsigned char output)
     }
   }
   
+  
   FLOAT_PIN_HIGH(_data_pin);
+  
+  TEST(Serial.println());
   
   return _read_bit(&error);
 }
@@ -198,12 +214,14 @@ char Software_I2C::_write_bit(unsigned char bit)
   if (bit > 0)
   {
     FLOAT_PIN_HIGH(_data_pin);
-    //Serial.print("1");
+    
+    TEST(Serial.print("wb1"));
   }
   else 
   {
     DRIVE_PIN_LOW(_data_pin);
-    //Serial.print("0");
+    
+    TEST(Serial.print("wb0"));
   }
 
   CLOCK_DELAY();
@@ -218,12 +236,13 @@ char Software_I2C::_write_bit(unsigned char bit)
   {
     CLOCK_STRETCH_DELAY();
     stretch_timer++;
-    //Serial.print("S");
+    
+    TEST(Serial.print("S"));
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
       _release_control();
-      //Serial.println("Stretch1");
+      TEST(Serial.println("Strech1"));
       return WRITE_CLOCK_PIN_TIMEOUT;
     }
   }
@@ -237,7 +256,7 @@ char Software_I2C::_write_bit(unsigned char bit)
   if ((bit == 1) && (READ_PIN(_data_pin) == 0))
   {
     _release_control();
-    //Serial.println("Arbitration_Lost");
+    TEST(Serial.println("Arbitration_Lost"));
     return WRITE_ARBITRATION_LOST;
   }
   
