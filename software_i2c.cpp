@@ -47,7 +47,7 @@ char Software_I2C::status()
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
-      return BUSY;
+      return I2C_BUSY;
     }
   }
   
@@ -60,11 +60,11 @@ char Software_I2C::status()
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
-      return BUSY;
+      return I2C_BUSY;
     }
   }
   
-  return AVAILABLE;
+  return I2C_AVAILABLE;
 }
 
 /* Read a byte of information from a slave device and reply with the 
@@ -85,7 +85,7 @@ unsigned char Software_I2C::read(char* error, char ack)
 
     input_bit = _read_bit(error);
     
-    if (*error != NO_ERROR)
+    if (*error != I2C_NO_ERROR)
     {
       _release_control();
       return 0;
@@ -116,7 +116,7 @@ char Software_I2C::_read_bit(char* error)
 {
   char bit = 0;
   int stretch_timer = 0;
-  *error = NO_ERROR;
+  *error = I2C_NO_ERROR;
   
   /* Give up control of the data pin. */
 
@@ -137,7 +137,7 @@ char Software_I2C::_read_bit(char* error)
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
-      *error = READ_CLOCK_TIMEOUT;
+      *error = I2C_READ_CLOCK_TIMEOUT;
       _release_control();
       return 0;
     }
@@ -243,7 +243,7 @@ char Software_I2C::_write_bit(unsigned char bit)
     {
       _release_control();
       TEST(Serial.println("Strech1"));
-      return WRITE_CLOCK_PIN_TIMEOUT;
+      return I2C_WRITE_CLOCK_PIN_TIMEOUT;
     }
   }
   
@@ -257,14 +257,14 @@ char Software_I2C::_write_bit(unsigned char bit)
   {
     _release_control();
     TEST(Serial.println("Arbitration_Lost"));
-    return WRITE_ARBITRATION_LOST;
+    return I2C_WRITE_ARBITRATION_LOST;
   }
   
   CLOCK_DELAY();
   
   DRIVE_PIN_LOW(_clock_pin);
   
-  return NO_ERROR;
+  return I2C_NO_ERROR;
   
 }
 
@@ -287,7 +287,7 @@ char Software_I2C::start_i2c()
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
-      return START_CLOCK_PIN_ERROR;
+      return I2C_START_CLOCK_PIN_ERROR;
     }
   }
   
@@ -300,7 +300,7 @@ char Software_I2C::start_i2c()
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
-      return START_DATA_PIN_ERROR;
+      return I2C_START_DATA_PIN_ERROR;
     }
   }
   
@@ -308,7 +308,7 @@ char Software_I2C::start_i2c()
   CLOCK_DELAY();
   DRIVE_PIN_LOW(_clock_pin);
   
-  return NO_ERROR;
+  return I2C_NO_ERROR;
 
 }
 
@@ -330,7 +330,7 @@ char Software_I2C::stop_i2c()
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
-      return STOP_CLOCK_ERROR;
+      return I2C_STOP_CLOCK_ERROR;
     }
   }
   
@@ -346,11 +346,11 @@ char Software_I2C::stop_i2c()
     
     if (stretch_timer > CLOCK_STRETCH_TIMEOUT)
     {
-      return STOP_DATA_ERROR;
+      return I2C_STOP_DATA_ERROR;
     }
   }
   
-  return NO_ERROR;
+  return I2C_NO_ERROR;
 }
 
 void Software_I2C::_release_control()

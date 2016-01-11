@@ -1,0 +1,36 @@
+#######################################
+# Syntax Coloring Map for PrimitiveScheduler
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+Software_I2C	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+status               KEYWORD2
+read                 KEYWORD2
+write                KEYWORD2
+start_i2c            KEYWORD2
+stop_i2c             KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+I2C_HIGH                    LITERAL1
+I2C_LOW                     LITERAL1
+I2C_AVAILABLE               LITERAL1
+I2C_BUSY                    LITERAL1
+I2C_NO_ERROR                LITERAL1
+I2C_START_CLOCK_PIN_ERROR   LITERAL1
+I2C_START_DATA_PIN_ERROR    LITERAL1
+I2C_WRITE_CLOCK_PIN_TIMEOUT LITERAL1
+I2C_WRITE_ARBITRATION_LOST  LITERAL1
+I2C_READ_CLOCK_TIMEOUT      LITERAL1
+I2C_STOP_CLOCK_ERROR        LITERAL1
+I2C_STOP_DATA_ERROR         LITERAL1

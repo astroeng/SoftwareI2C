@@ -4,18 +4,21 @@
 #define I2C_HIGH 1
 #define I2C_LOW  0
 
-#define AVAILABLE               10
-#define BUSY                    11
+#define I2C_WRITE 0x00
+#define I2C_READ  0x01
+
+#define I2C_AVAILABLE               10
+#define I2C_BUSY                    11
 
 /* Errors */
-#define NO_ERROR                 0
-#define START_CLOCK_PIN_ERROR   -1
-#define START_DATA_PIN_ERROR    -2
-#define WRITE_CLOCK_PIN_TIMEOUT -3
-#define WRITE_ARBITRATION_LOST  -4
-#define READ_CLOCK_TIMEOUT      -5
-#define STOP_CLOCK_ERROR        -6
-#define STOP_DATA_ERROR         -7
+#define I2C_NO_ERROR                 0
+#define I2C_START_CLOCK_PIN_ERROR   -1
+#define I2C_START_DATA_PIN_ERROR    -2
+#define I2C_WRITE_CLOCK_PIN_TIMEOUT -3
+#define I2C_WRITE_ARBITRATION_LOST  -4
+#define I2C_READ_CLOCK_TIMEOUT      -5
+#define I2C_STOP_CLOCK_ERROR        -6
+#define I2C_STOP_DATA_ERROR         -7
 
 
 class Software_I2C 
